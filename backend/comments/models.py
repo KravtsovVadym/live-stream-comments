@@ -23,7 +23,7 @@ class Comment(models.Model):
         null=True,
         validators=[TextSizeValidator()],  # Check the size file (max 100KB)
     )
-    #  Parent link to the same model (Comment). Allows a comment to link to another comment.
+    #  Parent  link to the same model (Comment). Allows a comment to link to another comment.
     parent = models.ForeignKey(
         "self", on_delete=models.CASCADE, blank=True, null=True, related_name="replies"
     )
