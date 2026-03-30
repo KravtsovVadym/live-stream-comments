@@ -43,7 +43,7 @@ class TextSizeValidator:
             raise ValidationError("TXT file should not exceed 100 KB.")
 
 
-# security: sanitize HTML and validate XML
+# ---- Security: sanitize HTML and validate XML
 class XHTMLValidaror:
     """
     Validator for the uploaded XML file.
@@ -59,13 +59,13 @@ class XHTMLValidaror:
         self.allowed_attrs = {"a": ["href", "title"]}
 
     def __call__(self, value):
-        # Check for banned tags
+        # ---- Check for banned tags
         tag_list = re.findall(r"</?(\w+)[^>]*>", value.lower())
         for tag in tag_list:
             if tag not in self.allowed_tags:
                 raise ValidationError(f"Tag error: {tag} is not allowed")
 
-        # Check for closingtags
+        # ---- Check for closingtags
         stack = []
         tag_tuples = re.findall(r"(</?)(\w+)[^>]*>", value.lower())
         for tag_type, tag_name in tag_tuples:
@@ -79,21 +79,21 @@ class XHTMLValidaror:
         if stack:
             raise ValidationError(f"Unclosed Tag: {', '.join(stack)}")
 
-        # Check attributes in tag <a>
+        # ---- Check attributes in tag <a>
         for attrs_str in re.findall(r"<a\b([^>]*)>", value.lower()):
             for attr in re.findall(r"(\w+)\s*=", attrs_str):
                 if attr not in self.allowed_attrs["a"]:
                     raise ValidationError(
                         f"Attribute '{attr}' is not allowed in <a>. Allowed: {', '.join(self.allowed_attrs['a'])}"
                     )
-            # XSS перевірка href
+            # ---- XSS перевірка href
             href_match = re.search(
                 r'href\s*=\s*["\']?([^"\'>\s]+)', attrs_str, re.IGNORECASE
             )
             if href_match:
-                # html.unescape decodes ALL entities: &#106; &#x6A; &colon....
+                # ---- html.unescape decodes ALL entities: &#106; &#x6A; &colon....
                 url = html.unescape(href_match.group(1)).strip()
-                # We remove zero bytes and spaces
+                # ---- We remove zero bytes and spaces
                 url_clean = re.sub(r"[\s\x00-\x1F]", "", url)
                 if self.DANGEROUS_PROTOCOLS.match(url_clean):
                     raise ValidationError(f"Небезпечний протокол у href: '{url}'.")
