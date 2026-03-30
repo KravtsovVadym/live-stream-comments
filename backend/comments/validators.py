@@ -16,6 +16,7 @@ class NicknameValidator:
             raise ValidationError(
                 "User Name can only contain letters of the Latin alphabet and numbers."
             )
+        return value
 
 
 class ImageFormatValidator:
