@@ -1,9 +1,0 @@
-Django>=6.0
-djangorestframework  #  A set of tools for creating Web APIs
-django-cors-headers  # Allows browsers to make cross-domain requests to the server
-psycopg2-binary  # PostgreSQL adapter for Python
-Pillow  # A library for image processing
-django-simple-captcha  # A simple CAPTCHA implementation for Django
-python-dotenv  # Loads environment variables from an .env file
-channels  # Support for asynchronous protocols in Django (WebSockets, Chat)
-daphne  # ASGI server for Django Channels
