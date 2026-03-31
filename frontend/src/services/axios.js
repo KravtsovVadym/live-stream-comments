@@ -7,6 +7,7 @@ const apiClient = axios.create({
     // to send images and TXT files
     'Content-Type': 'multipart/form-data',
   },
+  timeout: 15000,
 })
 
 export default apiClient
