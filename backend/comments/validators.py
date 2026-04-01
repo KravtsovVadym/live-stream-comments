@@ -41,6 +41,7 @@ class TextSizeValidator:
     def __call__(self, file):
         if file.size > (100 * 1024):  # (100 KB in bytes)
             raise ValidationError("TXT file should not exceed 100 KB.")
+        return file
 
 
 # ---- Security: sanitize HTML and validate XML
