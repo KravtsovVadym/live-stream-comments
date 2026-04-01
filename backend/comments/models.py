@@ -4,8 +4,12 @@ Comment model for storing user comments and replies.
 
 # ---- Importing storages to use the raw storage for file uploads
 from django.core.files.storage import storages  # type: ignore
-
 from django.db import models
+
+
+# ---- Function to get the raw storage
+def get_raw_storage():
+    return storages["raw"]
 
 
 class Comment(models.Model):
@@ -23,7 +27,7 @@ class Comment(models.Model):
         blank=True,
         null=True,
         # ---- Using the raw storage for files to avoid any processing by cloudinary
-        storage=lambda: storages["raw"],
+        storage=get_raw_storage,
     )
     # ---- Parent  link to the same model (Comment). Allows a comment to link to another comment.
     parent = models.ForeignKey(
