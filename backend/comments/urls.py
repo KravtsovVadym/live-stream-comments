@@ -1,7 +1,8 @@
 from django.urls import path, include
-from .views import CommentListCreateView
+from comments import views as view
 
 urlpatterns = [
-    path("comments/", CommentListCreateView.as_view(), name="coment-list-create"),
-    path("captcha/", include("captcha.urls")),
+    path("comments/", view.CommentListCreateView.as_view(), name="coment-list-create"),
+    path("captcha/", view.get_captcha, name="captcha"),
+    path("captcha/image/", include("captcha.urls")),
 ]

@@ -1,3 +1,9 @@
+# ---- Captcha
+from captcha.models import CaptchaStore
+from captcha.helpers import captcha_image_url
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+
 # ---- Allows to call (async func) with (cync code)
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
@@ -10,6 +16,15 @@ from rest_framework.parsers import FormParser, MultiPartParser
 
 from .models import Comment
 from .serializers import CommentSerializer
+
+
+# ---- Captcha API
+@api_view(["GET"])
+def get_captcha(request):
+    key = CaptchaStore.generate_key()
+    return Response(
+        {"key": key, "image_url": request.build_absolute_uri(captcha_image_url(key))}
+    )
 
 
 class CommentPaginator(PageNumberPagination):
@@ -29,14 +44,16 @@ class CommentListCreateView(generics.ListCreateAPIView):
         # - the number of database hits when accessing the parent comment.
         return Comment.objects.select_related("parent").filter(parent=None)
 
+    # ---- Override the create method
     def perform_create(self, serializer):
         comment = serializer.save()
         self._broadcast(comment)
 
+    # ---- Distribute notifications to the group
     def _broadcast(self, comment):
         channel_layer = get_channel_layer()
         data = CommentSerializer(comment, context={"request": self.request}).data
-        async_to_sync(channel_layer.group_send)(
+        async_to_sync(channel_layer.group_send)(  # type: ignore
             "comments_group",
             {
                 "type": "send_comment",
