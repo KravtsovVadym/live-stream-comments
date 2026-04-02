@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, nextTick, onMounted } from 'vue'
+import { ref, computed, nextTick, onMounted, watch } from 'vue'
 // ---- performs safe HTML cleanups
 import DOMPurify from 'dompurify'
 // ---- Import icons from the Lucide Vue library for the comment editor interface
@@ -12,8 +12,16 @@ import {
   FileText,
   Send,
   RefreshCw,
+  X,
 } from 'lucide-vue-next'
+// ---- Import the comment service for API interactions
 import { commentService } from '../services/commentService'
+
+const props = defineProps({
+  parentId: { type: Number, default: null },
+})
+
+const emit = defineEmits(['success', 'cancel-reply'])
 
 const textareaRef = ref(null)
 const fileInput = ref(null)
@@ -29,12 +37,12 @@ const triggerAlert = (message) => {
 }
 
 const formData = ref({
-  nickname: '',
-  email: '',
+  nickname: localStorage.getItem('user_nickname') || '',
+  email: localStorage.getItem('user_email') || '',
   homepage: '',
   text: '',
   captcha_key: '',
-  captcha_value: '',
+  captcha_val: '',
   image: null,
   file: null,
   parent: null,
@@ -54,6 +62,21 @@ const featchCaptcha = async () => {
   } catch (err) {
     console.error('Error loading captcha', err)
   }
+}
+
+// ---- Watch for parent ID changes
+watch(
+  () => props.parentId,
+  (newParentId) => {
+    if (newParentId) {
+      formData.value.parent = newParentId
+    }
+  },
+)
+
+const cancelReply = () => {
+  formData.value.parent = null
+  emit('cancel-reply')
 }
 
 // ---- Getting a captcha when loading
@@ -140,13 +163,18 @@ const submitForm = async () => {
 
   try {
     await commentService.createComment(requestData)
+    // ---- Save user data to localStorage
+    // ---- So that the user does not immediately enter his name and email
+    localStorage.setItem('user_nickname', formData.value.nickname)
+    localStorage.setItem('user_email', formData.value.email)
     // ---- Clear after success
     Object.assign(formData.value, {
-      nickname: '',
-      email: '',
+      nickname: formData.value.nickname,
+      email: formData.value.email,
       homepage: '',
       text: '',
       captcha_key: '',
+      captcha_val: '',
       image: null,
       file: null,
       parent: null,
@@ -159,6 +187,7 @@ const submitForm = async () => {
     setTimeout(() => (showSuccess.value = false), 3000)
 
     featchCaptcha() // ---- Update the captcha
+    emit('success')
   } catch (err) {
     if (err.response && err.response.data) {
       console.log(err.response.data)
@@ -172,41 +201,44 @@ const submitForm = async () => {
 </script>
 
 <template>
-  <form @submit.prevent="submitForm" class="comment-form">
-    <div class="user-info">
-      <div class="input-group">
+  <form @submit.prevent="submitForm" class="comm-f">
+    <div v-if="formData.parent" class="rpl-inf">
+      <span>Replying to comment #{{ formData.parent }}</span>
+      <button type="button" @click="cancelReply" class="cancel-btn">
+        <X :size="16" /> Cancel
+      </button>
+    </div>
+
+    <div class="u-info">
+      <div class="inp-gr">
         <input
           v-model="formData.nickname"
           placeholder="Nickname (Latin/Digits)"
           required
           pattern="^[a-zA-Z0-9]+$"
         />
-        <span v-if="errors.nickname" class="error">{{
-          errors.nickname[0]
-        }}</span>
+        <span v-if="errors.nickname" class="err">{{ errors.nickname[0] }}</span>
       </div>
-      <div class="input-group">
+      <div class="inp-gr">
         <input
           v-model="formData.email"
           type="email"
           placeholder="E-mail"
           required
         />
-        <span v-if="errors.email" class="error">{{ errors.email[0] }}</span>
+        <span v-if="errors.email" class="err">{{ errors.email[0] }}</span>
       </div>
-      <div class="input-group">
+      <div class="inp-gr">
         <input
           v-model="formData.homepage"
           type="url"
           placeholder="Home page (optional)"
         />
-        <span v-if="errors.homepage" class="error">{{
-          errors.homepage[0]
-        }}</span>
+        <span v-if="errors.homepage" class="err">{{ errors.homepage[0] }}</span>
       </div>
     </div>
 
-    <div class="comment-editor">
+    <div class="comm-e">
       <button type="button" @click="insertTag('strong')">
         <Bold :size="18" />
       </button>
@@ -219,7 +251,7 @@ const submitForm = async () => {
       <button type="button" @click="insertTag('a')">
         <Link :size="18" />
       </button>
-      <label class="file-label">
+      <label class="fil-l">
         <ImageIcon :size="18" />
         <input
           type="file"
@@ -229,7 +261,7 @@ const submitForm = async () => {
           hidden
         />
       </label>
-      <label class="file-label">
+      <label class="f-lbl">
         <FileText :size="18" />
         <input
           type="file"
@@ -246,39 +278,36 @@ const submitForm = async () => {
       placeholder="Your message..."
       required
     ></textarea>
-    <span v-if="errors.text" class="errors">{{ errors.text[0] }}</span>
+    <span v-if="errors.text" class="err">{{ errors.text[0] }}</span>
 
-    <div class="captcha-section">
-      <div class="captcha-img-wrapper">
-        <img :src="captchaUrl" alt="captcha" class="captcha-img" />
-        <button type="button" @click="featchCaptcha" class="refresh-btn">
+    <div class="cp-section">
+      <div class="cp-img-wr">
+        <img :src="captchaUrl" alt="captcha" class="cp-img" />
+        <button type="button" @click="featchCaptcha" class="ref-btn">
           <RefreshCw :size="16" />
         </button>
       </div>
-      <input
-        v-model="formData.captcha_value"
-        placeholder="Enter code"
-        required
-      />
-      <span v-if="errors.captcha_value || errors.captcha" class="error">
+      <input v-model="formData.captcha_val" placeholder="Enter code" required />
+      <span v-if="errors.captcha_val || errors.captcha" class="err">
         {{
-          (errors.captcha_value ? errors.captcha_value[0] : '') ||
+          (errors.captcha_val ? errors.captcha_val[0] : '') ||
           (errors.captcha ? errors.captcha[0] : '')
         }}
       </span>
     </div>
-    <div v-if="formData.text" class="preview-box">
-      <p class="preview-title">Preview:</p>
-      <div v-html="previewHtml" class="preview-content"></div>
+    ``
+    <div v-if="formData.text" class="pre-box">
+      <p class="pre-titl">Preview:</p>
+      <div v-html="previewHtml" class="pre-cntx"></div>
     </div>
     <transition-group name="fade">
-      <p v-if="showSuccess" class="success-message">
+      <p v-if="showSuccess" class="success-m">
         The comment has been successfully added to the database!
       </p>
-      <p v-if="alertMessage" class="alert-toast">{{ alertMessage }}</p>
+      <p v-if="alertMessage" class="al-toast">{{ alertMessage }}</p>
     </transition-group>
 
-    <button type="submit" :disabled="isSubmitting" class="submit-btn">
+    <button type="submit" :disabled="isSubmitting" class="sub-btn">
       <Send :size="18" /> {{ isSubmitting ? 'Sending...' : 'Post Comment' }}
     </button>
   </form>
