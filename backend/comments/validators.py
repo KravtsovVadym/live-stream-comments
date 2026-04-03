@@ -28,7 +28,7 @@ class ImageFormatValidator:
         img = Image.open(image)
         if img.format not in {"JPEG", "GIF", "PNG"}:
             raise ValidationError(
-                f"Acceptable formats: JPG, GIF, PNG. You have downloaded: {img.format}"
+                f"Acceptable formats: JPG, GIF, PNG. Received: {img.format}"
             )
         image.seek(0)
 
@@ -45,7 +45,7 @@ class TextSizeValidator:
 
 
 # ---- Security: sanitize HTML and validate XML
-class XHTMLValidaror:
+class XHTMLValidator:
     """
     Validator for the uploaded XML file.
     """
@@ -87,7 +87,7 @@ class XHTMLValidaror:
                     raise ValidationError(
                         f"Attribute '{attr}' is not allowed in <a>. Allowed: {', '.join(self.allowed_attrs['a'])}"
                     )
-            # ---- XSS перевірка href
+            # ---- XSS audithref
             href_match = re.search(
                 r'href\s*=\s*["\']?([^"\'>\s]+)', attrs_str, re.IGNORECASE
             )
@@ -97,6 +97,6 @@ class XHTMLValidaror:
                 # ---- We remove zero bytes and spaces
                 url_clean = re.sub(r"[\s\x00-\x1F]", "", url)
                 if self.DANGEROUS_PROTOCOLS.match(url_clean):
-                    raise ValidationError(f"Небезпечний протокол у href: '{url}'.")
+                    raise ValidationError(f"Dangerous protocol href: '{url}'.")
 
         return value

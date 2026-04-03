@@ -10,16 +10,17 @@ from .models import Comment
 from .validators import (
     ImageFormatValidator,
     TextSizeValidator,
-    XHTMLValidaror,
+    XHTMLValidator,
     NicknameValidator,
 )
 
 
 class CommentSerializer(serializers.ModelSerializer):
     # ---- Dynamic fieldі for theavatar and check a CAPTCHA
-    avatar_url = serializers.SerializerMethodField()
     captcha_key = serializers.CharField(write_only=True)
-    captcha_value = serializers.CharField(write_only=True)
+    captcha_val = serializers.CharField(write_only=True)
+    avatar_url = serializers.SerializerMethodField()
+    replies = serializers.SerializerMethodField()
 
     class Meta:
         model = Comment
@@ -34,22 +35,29 @@ class CommentSerializer(serializers.ModelSerializer):
             "parent",
             "created_at",
             "avatar_url",
+            "replies",
             "captcha_key",
-            "captcha_value",
+            "captcha_val",
         ]
 
-        read_only_fields = ["id", "created_at"]
+        read_only_fields = ["id", "created_at", "avatar_url", "replies"]
 
     def get_avatar_url(self, obj):
         # ---- We generate a hash using MD5, always for each other and for that mail.
         email_hash = hashlib.md5(obj.email.lower().encode("utf-8")).hexdigest()
         return f"https://robohash.org/{email_hash}?set=set1&size=80x80"
 
+    def get_replies(self, obj):
+        # ---- Get all replies for this comment
+        replies = obj.replies.all()
+        return CommentSerializer(replies, many=True).data
+
     def validate(self, data):
         # ---- Mandatory captcha verification
         try:
             captcha = CaptchaStore.objects.get(hashkey=data.get("captcha_key"))
-            if captcha.response != data.get("captcha_value").lower():
+
+            if captcha.response != data.get("captcha_val").lower():
                 raise serializers.ValidationError(
                     {"captcha": "Invalid code from image"}
                 )
@@ -59,7 +67,7 @@ class CommentSerializer(serializers.ModelSerializer):
         # ---- Since these fields are not in the db
         # ---- We delete the data before saving it in the db so that an error does not appear
         data.pop("captcha_key", None)
-        data.pop("captcha_value", None)
+        data.pop("captcha_val", None)
         return data
 
     def validate_image(self, value):
@@ -68,15 +76,18 @@ class CommentSerializer(serializers.ModelSerializer):
 
         ImageFormatValidator()(value)
         img = Image.open(value)
+        format = img.format
         # ---- Corrects image orientation
         img = ImageOps.exif_transpose(img)
 
         if img.height > 240 or img.width > 320:
             img.thumbnail((320, 240), Image.Resampling.LANCZOS)
             buffer = BytesIO()
-            img.save(buffer, format=img.format or "JPEG")
+            # ---- Preserve original format or use JPEG
+            img.save(buffer, format=format)
             buffer.seek(0)
-            return ContentFile(buffer.read(), name=value.name)
+            # ---- Keep original filename
+            return ContentFile(buffer.getvalue(), name=value.name)
         return value
 
     def validate_nickname(self, value):
@@ -86,4 +97,4 @@ class CommentSerializer(serializers.ModelSerializer):
         return TextSizeValidator()(value)
 
     def validate_text(self, value):
-        return XHTMLValidaror()(value)
+        return XHTMLValidator()(value)

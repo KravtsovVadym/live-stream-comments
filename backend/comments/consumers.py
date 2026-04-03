@@ -4,23 +4,22 @@ handling real-time comments using Django Channels.
 """
 
 import json
-from channels.generic.websocket import AsyncJsonWebsocketConsumer
+from channels.generic.websocket import AsyncWebsocketConsumer
 
 
-class CommentConsumer(AsyncJsonWebsocketConsumer):
+class CommentConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.group_name = "comments_group"
 
-        # ---- Join the group
+        # Join the group
         await self.channel_layer.group_add(self.group_name, self.channel_name)
         await self.accept()
 
     async def disconnect(self, close_code):
-        # ---- Leave the group
+        # We leave the group
         await self.channel_layer.group_discard(self.group_name, self.channel_name)
 
-    #  ---- Receive message from WebSocket
     async def send_comment(self, event):
-        # ---- Send the comment data to the WebSocket
-        comment_data = event["data"]
-        await self.send(text_data=json.dumps(comment_data))
+        await self.send(
+            text_data=json.dumps({"type": "comment_created", "comment": event["data"]})
+        )

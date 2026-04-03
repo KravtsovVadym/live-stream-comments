@@ -5,4 +5,5 @@ urlpatterns = [
     path("comments/", view.CommentListCreateView.as_view(), name="coment-list-create"),
     path("captcha/", view.get_captcha, name="captcha"),
     path("captcha/image/", include("captcha.urls")),
+    path("proxy-file/", view.proxy_file, name="proxy-file"),
 ]

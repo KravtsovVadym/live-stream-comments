@@ -3,6 +3,7 @@ from captcha.models import CaptchaStore
 from captcha.helpers import captcha_image_url
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from django.http import HttpResponse
 
 # ---- Allows to call (async func) with (cync code)
 from asgiref.sync import async_to_sync
@@ -16,6 +17,29 @@ from rest_framework.parsers import FormParser, MultiPartParser
 
 from .models import Comment
 from .serializers import CommentSerializer
+
+import requests
+
+
+@api_view(["GET"])
+def proxy_file(request):
+    file_url = request.query_params.get("url")
+
+    if not file_url:
+        return Response({"error": "URL parameter is required"}, status=400)
+
+    #  ---- Let's get the file from the cloud storage
+    try:
+        response = requests.get(file_url, stream=True)
+        response.raise_for_status()
+
+        # Dynamically set content type and stream the content
+        content_type = response.headers.get("Content-Type", "text/plain")
+        return HttpResponse(
+            response.iter_content(chunk_size=8192), content_type=content_type
+        )
+    except requests.RequestException as e:
+        return Response({"error": f"Failed to fetch file: {str(e)}"}, status=400)
 
 
 # ---- Captcha API
