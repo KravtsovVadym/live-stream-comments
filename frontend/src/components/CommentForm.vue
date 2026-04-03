@@ -116,6 +116,7 @@ const insertTag = (tag) => {
 // ---- Frontend validation files
 const handlerFileChange = (event, type) => {
   const file = event.target.files[0]
+  console.log('FILE:', file)
   if (!file) return
   // ---- Check if the file is an image
   if (type === 'image') {
@@ -125,8 +126,8 @@ const handlerFileChange = (event, type) => {
       event.target.value = ''
       return
     }
-    // ---- Check if the image is more than 5MB
-    if (file.size > 5 * 1024 * 1024) {
+    // ---- Check if the image is more than 10MB
+    if (file.size > 10 * 1024 * 1024) {
       triggerAlert('image too large (max 5MB)')
       event.target.value = ''
       return
@@ -158,9 +159,19 @@ const submitForm = async () => {
   const requestData = new FormData()
 
   Object.entries(formData.value).forEach(([key, val]) => {
-    if (val !== null && val !== '') requestData.append(key, val)
+    // Skip the files in this loop, process them separately
+    if (key !== 'image' && key !== 'file' && val !== null && val !== '') {
+      requestData.append(key, val)
+    }
   })
 
+  // ---- EXPRESSLY add files with their names (logic for Firefox)
+  if (formData.value.image) {
+    requestData.append('image', formData.value.image, formData.value.image.name)
+  }
+  if (formData.value.file) {
+    requestData.append('file', formData.value.file, formData.value.file.name)
+  }
   try {
     await commentService.createComment(requestData)
     // ---- Save user data to localStorage
@@ -184,14 +195,13 @@ const submitForm = async () => {
     if (fileInput.value) fileInput.value.value = ''
     // --- Show a success message and hide it
     showSuccess.value = true
-    setTimeout(() => (showSuccess.value = false), 3000)
+    setTimeout(() => (showSuccess.value = false), 5000)
 
     featchCaptcha() // ---- Update the captcha
     emit('success')
   } catch (err) {
     if (err.response && err.response.data) {
-      console.log(err.response.data)
-      errors.value = err.response.data // ---- DRF returns validation errors here
+      errors.value = err.response.data // ---- DRF returns validation errors
     }
     featchCaptcha() // ---- Update the captcha
   } finally {
@@ -251,26 +261,31 @@ const submitForm = async () => {
       <button type="button" @click="insertTag('a')">
         <Link :size="18" />
       </button>
-      <label class="fil-l">
+
+      <label class="fil-l" for="imageInput">
         <ImageIcon :size="18" />
-        <input
-          type="file"
-          ref="imageInput"
-          @change="(event) => handlerFileChange(event, 'image')"
-          accept="image/*"
-          hidden
-        />
       </label>
-      <label class="f-lbl">
+      <input
+        id="imageInput"
+        type="file"
+        ref="imageInput"
+        accept="image/*"
+        @change="(e) => handlerFileChange(e, 'image')"
+        style="display: none"
+      />
+
+      <label class="f-lbl" for="fileInput">
         <FileText :size="18" />
-        <input
-          type="file"
-          ref="fileInput"
-          @change="(event) => handlerFileChange(event, 'file')"
-          accept=".txt"
-          hidden
-        />
       </label>
+
+      <input
+        id="fileInput"
+        type="file"
+        ref="fileInput"
+        accept=".txt"
+        @change="(e) => handlerFileChange(e, 'file')"
+        style="display: none"
+      />
     </div>
     <textarea
       v-model="formData.text"
