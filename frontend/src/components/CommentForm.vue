@@ -27,7 +27,6 @@ const textareaRef = ref(null)
 const fileInput = ref(null)
 const imageInput = ref(null)
 const alertMessage = ref('')
-// ---- Show an error message
 const triggerAlert = (message) => {
   alertMessage.value = message
   // ---- Clear after 3 seconds
@@ -128,12 +127,11 @@ const handlerFileChange = (event, type) => {
     }
     // ---- Check if the image is more than 10MB
     if (file.size > 10 * 1024 * 1024) {
-      triggerAlert('image too large (max 5MB)')
+      triggerAlert('Image too large (max 10MB)')
       event.target.value = ''
       return
     }
     formData.value.image = file
-    //--------------------------------------
     // ---- Check if the file is a TXT
   } else if (type === 'file') {
     const allowed = 'text/plain'
@@ -200,6 +198,7 @@ const submitForm = async () => {
     featchCaptcha() // ---- Update the captcha
     emit('success')
   } catch (err) {
+    console.error('Upload error:', err.response?.data || err.message)
     if (err.response && err.response.data) {
       errors.value = err.response.data // ---- DRF returns validation errors
     }
