@@ -47,12 +47,24 @@ defineExpose({
 
 <template>
   <div class="comm-wrp">
+        <div class="pgn" v-if="totalPages > 1">
+      <button
+        v-for="p in totalPages"
+        :key="p"
+        @click="loadComments(p)"
+        :class="{ active: p === currentPage }"
+      >
+        {{ p }}
+      </button>
+    </div>
+    <br>
     <div class="sort-bar">
       <button @click="sortByNickname">User Name</button>
       <button @click="sortByEmail">Email</button>
       <button @click="sortByNewest">Newest First</button>
       <button @click="sortByOldest">Oldest First</button>
     </div>
+    
     <!-- ---- Comment tree CommentNode recursive component -->
     <div class="comm-tree">
       <CommentNode

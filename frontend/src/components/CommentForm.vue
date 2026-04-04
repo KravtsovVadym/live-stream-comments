@@ -36,8 +36,6 @@ const triggerAlert = (message) => {
 }
 
 const formData = ref({
-  nickname: localStorage.getItem('user_nickname') || '',
-  email: localStorage.getItem('user_email') || '',
   homepage: '',
   text: '',
   captcha_key: '',
@@ -81,10 +79,11 @@ const cancelReply = () => {
 // ---- Getting a captcha when loading
 onMounted(featchCaptcha)
 
-// ---- Reactive preview of the comment and performs safe HTML cleanups
+// ---- Reactive preview: replace \n with <br> then sanitize
 const previewHtml = computed(() => {
-  return DOMPurify.sanitize(formData.value.text, {
-    ALLOWED_TAGS: ['a', 'code', 'i', 'strong'],
+  const withBreaks = formData.value.text.replace(/\n/g, '<br>')
+  return DOMPurify.sanitize(withBreaks, {
+    ALLOWED_TAGS: ['a', 'code', 'i', 'strong', 'br'],
     ALLOWED_ATTR: ['href', 'title'],
   })
 })
@@ -149,6 +148,20 @@ const handlerFileChange = (event, type) => {
     formData.value.file = file
   }
 }
+const resetForm = () => {
+// ---- Clear text and file fields, but LEAVE nickname and email 
+  formData.value.text = ''
+  formData.value.homepage = ''
+  formData.value.captcha_val = ''
+  formData.value.image = null
+  formData.value.file = null
+  formData.value.parent = null
+
+  if (imageInput.value) imageInput.value.value = ''
+  if (fileInput.value) fileInput.value.value = ''
+
+  featchCaptcha()
+}
 
 // ---- Form submission
 const submitForm = async () => {
@@ -171,33 +184,16 @@ const submitForm = async () => {
     requestData.append('file', formData.value.file, formData.value.file.name)
   }
   try {
-    await commentService.createComment(requestData)
-    // ---- Save user data to localStorage
-    // ---- So that the user does not immediately enter his name and email
-    localStorage.setItem('user_nickname', formData.value.nickname)
-    localStorage.setItem('user_email', formData.value.email)
-    // ---- Clear after success
-    Object.assign(formData.value, {
-      nickname: formData.value.nickname,
-      email: formData.value.email,
-      homepage: '',
-      text: '',
-      captcha_key: '',
-      captcha_val: '',
-      image: null,
-      file: null,
-      parent: null,
-    })
-    // ---- Clear the physical fields of file selection (via ref)
-    if (imageInput.value) imageInput.value.value = ''
-    if (fileInput.value) fileInput.value.value = ''
-    // --- Show a success message and hide it
-    showSuccess.value = true
-    setTimeout(() => (showSuccess.value = false), 5000)
+    const response = await commentService.createComment(requestData)
 
-    featchCaptcha() // ---- Update the captcha
-    emit('success')
+    if (response) {
+      resetForm()
+      showSuccess.value = true
+      emit('success', props.parentId)
+      setTimeout(() => (showSuccess.value = false), 5000)
+    }
   } catch (err) {
+
     console.error('Upload error:', err.response?.data || err.message)
     if (err.response && err.response.data) {
       errors.value = err.response.data // ---- DRF returns validation errors
@@ -261,7 +257,7 @@ const submitForm = async () => {
         <Link :size="18" />
       </button>
 
-      <label class="fil-l" for="imageInput">
+      <label class="fil-l" for="imageInput" :class="{ active: formData.image }">
         <ImageIcon :size="18" />
       </label>
       <input
@@ -273,7 +269,7 @@ const submitForm = async () => {
         style="display: none"
       />
 
-      <label class="f-lbl" for="fileInput">
+      <label class="f-lbl" for="fileInput" :class="{ active: formData.file }">
         <FileText :size="18" />
       </label>
 
@@ -309,7 +305,7 @@ const submitForm = async () => {
         }}
       </span>
     </div>
-    ``
+
     <div v-if="formData.text" class="pre-box">
       <p class="pre-titl">Preview:</p>
       <div v-html="previewHtml" class="pre-cntx"></div>
