@@ -1,0 +1,73 @@
+@use 'variables' as *;
+
+// ----  Text window for viewing text files 
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+}
+
+.modal-content {
+  background: $dark-card;
+  border: 1px solid $dark-border;
+  border-radius: 0.75rem;
+  width: 90%;
+  max-width: 620px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+
+  .close-btn {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid $dark-border;
+    border-radius: $r;
+    cursor: pointer;
+    color: $text-muted;
+    padding: 5px;
+    display: flex;
+    transition: color 0.2s;
+    &:hover {
+      color: $text-main;
+    }
+  }
+
+  h2 {
+    color: $text-main;
+    font-size: 1rem;
+    padding-right: 2rem;
+    margin: 0 0 1rem;
+  }
+
+  // ---- scrollable text content area
+  .txt-view {
+    flex: 1;
+    overflow-y: auto;
+    background: $dark-input;
+    border: 1px solid $dark-border;
+    border-radius: $r;
+    padding: 1rem;
+    pre {
+      color: $text-main;
+      font-size: 0.8125rem;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      margin: 0;
+    }
+    .load {
+      color: $text-muted;
+      text-align: center;
+      padding: 1rem 0;
+      font-size: 0.875rem;
+    }
+  }
+}

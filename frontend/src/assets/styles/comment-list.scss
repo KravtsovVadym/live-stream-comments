@@ -1,0 +1,72 @@
+@use 'variables' as *;
+
+.comm-wrp {
+  margin-top: 8px;
+  max-width: 760px;
+  margin-left: auto;
+  margin-right: auto;
+  word-break: break-word;
+}
+// ---- Sorting buttons bar
+
+.sort-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 30px;
+
+  button {
+    padding: 6px 14px;
+    background: transparent;
+    border: 1px solid $dark-border;
+    border-radius: $r;
+    color: $text-muted;
+    font-size: 0.8125rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    &:hover {
+      border-color: $purple;
+      color: $purple-light;
+    }
+    &.active {
+      background: rgba($purple, 0.18);
+      border-color: rgba($purple, 0.5);
+      color: $purple-light;
+    }
+  }
+}
+// ---- Comments tree layout
+
+.comm-tree {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+// ---- Pagination
+.pgn {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 24px;
+
+  button {
+    padding: 6px 13px;
+    background: transparent;
+    border: 1px solid $dark-border;
+    border-radius: $r;
+    color: $text-muted;
+    font-size: 0.8125rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    &:hover {
+      border-color: $purple;
+      color: $purple-light;
+    }
+    &.active {
+      background: rgba($purple, 0.2);
+      border-color: rgba($purple, 0.5);
+      color: $purple-light;
+    }
+  }
+}

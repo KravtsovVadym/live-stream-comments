@@ -1,0 +1,59 @@
+@use 'variables' as *;
+
+.comm-n {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.rep-cont {
+  margin-left: 20px;
+  border-left: 1px solid $dark-border;
+  padding-left: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  // ---- Stop the retreat after the 2nd level of attachment
+  .rep-cont {
+    margin-left: 12px;
+    padding-left: 12px;
+
+    .rep-cont {
+      margin-left: 0;
+      padding-left: 8px;
+      border-left-color: rgba($dark-border, 0.4);
+    }
+  }
+
+  // ---- Embedded cards
+  > .comm-n > .comm-item,
+  .comm-item {
+    padding: 14px 16px;
+    background: #0a2a35 !important;
+    border-color: #0d3a47 !important;
+
+    &:hover {
+      background: #0d3340 !important;
+      border-color: rgba(#1a7a8a, 0.4) !important;
+    }
+  }
+}
+
+// ---- МобMobile retreats
+@media (max-width: 480px) {
+  .rep-cont {
+    margin-left: 10px;
+    padding-left: 8px;
+
+    .rep-cont {
+      margin-left: 6px;
+      padding-left: 6px;
+
+      .rep-cont {
+        margin-left: 0;
+        padding-left: 4px;
+      }
+    }
+  }
+}
