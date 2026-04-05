@@ -1,0 +1,46 @@
+# ---- Docker Compose config for local development (DB, Redis, Backend, Frontend)
+services:
+  # ---- PostgreSQL база даних
+  db:
+    image: postgres:16-alpine
+    env_file:
+      - ./backend/.env
+    ports:
+      - "5433:5432"
+
+  # ----Redis for caching and sessions
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  # ---- Django backend with Daphne (ASGI server for WebSocket)
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: >
+      sh -c "python manage.py migrate &&
+      daphne -b 0.0.0.0 -p 8000 comment_board.asgi:application"
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env
+    volumes:
+      - ./backend/media:/app/backend/media
+    depends_on:
+      - db
+      - redis
+
+  # ---- Vue 3 frontend dev server
+  frontend:
+    image: node:18-alpine
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    command: sh -c "npm install && npm run dev -- --host"
+    depends_on:
+      - backend
