@@ -4,11 +4,11 @@
 .modal-overlay {
   position: fixed;
   inset: 0;
-  backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.359);
   display: flex;
   align-items: center;
   justify-content: center;
-
+  z-index: 1000;
 }
 
 .modal-content {
@@ -20,14 +20,28 @@
   max-height: 85vh;
   display: flex;
   flex-direction: column;
-  padding: 1.5rem;
+  padding: 0;
   position: relative;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
 
+  .modal-header {
+    background: rgba(0, 0, 0, 0.6);
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid $dark-border;
+    border-radius: 0.75rem 0.75rem 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  h2 {
+    color: $text-main;
+    font-size: 1rem;
+    margin: 0;
+    flex: 1;
+  }
+
   .close-btn {
-    position: absolute;
-    top: 0.75rem;
-    right: 0.75rem;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid $dark-border;
     border-radius: $r;
@@ -41,21 +55,13 @@
     }
   }
 
-  h2 {
-    color: $text-main;
-    font-size: 1rem;
-    padding-right: 2rem;
-    margin: 0 0 1rem;
-  }
-
-  // ---- scrollable text content area
   .txt-view {
     flex: 1;
     overflow-y: auto;
     background: $dark-input;
     border: 1px solid $dark-border;
-    border-radius: $r;
-    padding: 1rem;
+    border-radius: 0 0 0.75rem 0.75rem;
+    padding: 1.5rem;
     pre {
       color: $text-main;
       font-size: 0.8125rem;
