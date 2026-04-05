@@ -10,7 +10,7 @@ const props = defineProps({
 
 const emit = defineEmits(['close'])
 const fileContent = ref('')
-const isLoading = ref(false)
+const isLoading = ref(true)
 
 const handleClose = () => {
   emit('close')
@@ -53,10 +53,12 @@ watch(
 <template>
   <div v-if="isOpen" class="modal-overlay" @click="handleClose">
     <div class="modal-content" @click.stop>
-      <button class="close-btn" @click="handleClose">
-        <X :size="20" />
-      </button>
-      <h2>{{ fileName }}</h2>
+      <div class="modal-header">
+        <h2>{{ fileName }}</h2>
+        <button class="close-btn" @click="handleClose">
+          <X :size="20" />
+        </button>
+      </div>
       <div class="txt-view">
         <div v-if="isLoading" class="load">Loading...</div>
         <pre v-else>{{ fileContent }}</pre>
@@ -65,4 +67,4 @@ watch(
   </div>
 </template>
 
-<style scoped lang="scss" src="../assets/styles/file-modal.scss"></style>
+<style lang="scss" src="../assets/styles/file-modal.scss"></style>
