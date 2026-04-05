@@ -39,6 +39,7 @@ class CommentConsumerTests(TestCase):
         )
 
         response = await communicator.receive_json_from()
-        self.assertEqual(response["nickname"], "Test")
-        self.assertEqual(response["text"], "Hello")
+        self.assertEqual(response["type"], "comment_created")
+        self.assertEqual(response["comment"]["nickname"], "Test")
+        self.assertEqual(response["comment"]["text"], "Hello")
         await communicator.disconnect()

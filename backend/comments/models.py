@@ -17,7 +17,7 @@ class Comment(models.Model):
     email = models.EmailField(max_length=100)
     homepage = models.URLField(max_length=255, blank=True, null=True)
     text = models.TextField()
-    image = image = models.ImageField(
+    image = models.ImageField(
         upload_to="comments/images/",
         blank=True,
         null=True,

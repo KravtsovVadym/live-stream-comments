@@ -10,7 +10,7 @@ const props = defineProps({
 
 const emit = defineEmits(['reply']) 
 // ---- Expandable answers
-const isExpanded = ref(true)
+const isExpanded = ref(false)
 const repContRef = ref(null)
 
 const handleReply = (commentId) => {
@@ -61,4 +61,4 @@ const totalReplies = computed(() => countAllReplies(props.comment.replies))
   </div>
 </template>
 
-<style scoped lang="scss" src="../assets/styles/comment-node.scss"></style>
+<style lang="scss" src="../assets/styles/comment-node.scss"></style>

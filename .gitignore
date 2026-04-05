@@ -1,0 +1,30 @@
+# ---- Environment variables
+.env
+
+# ---- Python
+__pycache__/
+venv/
+env/
+.venv/
+
+# ---- Django
+db.sqlite3
+/media
+/staticfiles
+/static
+
+# ---- Node.js / Frontend
+node_modules/
+dist/
+.DS_Store
+frontend/node_modules/
+/package-lock.json
+
+# ---- IDE
+.vscode/
+
+# ---- Testing
+.pytest_cache/
+
+# ---- Docker
+.dockerignore

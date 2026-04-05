@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, defineExpose } from 'vue'
+import { onMounted} from 'vue'
 import CommentNode from './CommentNode.vue'
 import { useWebSocket } from '../composables/useWebSocket'
 import { useCommentData } from '../composables/useCommentData'
@@ -88,4 +88,4 @@ defineExpose({
   </div>
 </template>
 
-<style scoped lang="scss" src="../assets/styles/comment-list.scss"></style>
+<style lang="scss" src="../assets/styles/comment-list.scss"></style>

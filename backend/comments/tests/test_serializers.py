@@ -22,7 +22,7 @@ def make_data(**kwargs):
         "email": "test@example.com",
         "text": "Hello world.",
         "captcha_key": "testkey",
-        "captcha_value": "abcd",
+        "captcha_val": "abcd",
         **kwargs,
     }
 
@@ -94,4 +94,4 @@ class CommentSerializerTests(TestCase):
         self.assertTrue(s.is_valid(), s.errors)
         validated = cast(dict, s.validated_data)
         self.assertNotIn("captcha_key", validated)
-        self.assertNotIn("captcha_value", validated)
+        self.assertNotIn("captcha_val", validated)

@@ -323,4 +323,4 @@ const submitForm = async () => {
   </form>
 </template>
 
-<style scoped lang="scss" src="../assets/styles/comment-form.scss"></style>
+<style lang="scss" src="../assets/styles/comment-form.scss"></style>

@@ -25,7 +25,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # ---- Copies the entire project code to /app
 COPY backend/ .
 
-COPY backend/entrypoint.sh /app/backend/entrypoint.sh
+COPY backend/entrypoint.sh /app/backend/entrypoint.sh 
 RUN chmod +x /app/backend/entrypoint.sh
 
 EXPOSE 8000

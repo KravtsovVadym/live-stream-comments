@@ -72,7 +72,7 @@ class CommentListCreateViewTests(TestCase):
                 "email": "test@test.com",
                 "text": "Hello",
                 "captcha_key": key,
-                "captcha_value": value,
+                "captcha_val": value,
             }
         )
         self.assertEqual(res.status_code, 201)
@@ -89,7 +89,7 @@ class CommentListCreateViewTests(TestCase):
                 "email": "test@test.com",
                 "text": "Hello",
                 "captcha_key": key,
-                "captcha_value": value,
+                "captcha_val": value,
             }
         )
         mock_async.assert_called_once()
@@ -102,7 +102,7 @@ class CommentListCreateViewTests(TestCase):
                 "email": "test@test.com",
                 "text": "Hello",
                 "captcha_key": "invalid",
-                "captcha_value": "wrong",
+                "captcha_val": "wrong",
             }
         )
         self.assertEqual(res.status_code, 400)

@@ -86,7 +86,7 @@ class CommentModelTests(TestCase):
             "text": "Test.",
             "file": ContentFile(large_content, name="large.txt"),
             "captcha_key": captcha.hashkey,
-            "captcha_value": captcha.response,
+            "captcha_val": captcha.response,
         }
         serializer = CommentSerializer(data=data)
         self.assertFalse(serializer.is_valid())
@@ -119,7 +119,7 @@ class CommentModelTests(TestCase):
             "text": "Test.",
             "image": ContentFile(buf.read(), name="test.bmp"),
             "captcha_key": captcha.hashkey,
-            "captcha_value": captcha.response,
+            "captcha_val": captcha.response,
         }
         serializer = CommentSerializer(data=data)
         self.assertFalse(serializer.is_valid())

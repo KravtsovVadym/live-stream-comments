@@ -75,12 +75,9 @@ const avatarUrl = computed(
         <div class="comm-head">
           <span class="nick">{{ comment.nickname }}</span>
           <span class="email">{{ comment.email }}</span>
-          <a
-            class="home-page"
-            target="_blank"
-            href="`{{ comment.homepage }}`"
-            >{{ comment.homepage }}</a
-          >
+          <a class="home-page" target="_blank" :href="comment.homepage">{{
+            comment.homepage
+          }}</a>
           <span class="date">{{ formattedDate }}</span>
         </div>
         <!-- Body text  + image -->
@@ -154,4 +151,5 @@ const avatarUrl = computed(
     />
   </div>
 </template>
-<style scoped lang="scss" src="../assets/styles/comment-item.scss"></style>
+
+<style lang="scss" src="../assets/styles/comment-item.scss"></style>

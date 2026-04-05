@@ -1,0 +1,31 @@
+# ---- Core Django
+Django>=5.0,<6.0
+djangorestframework
+django-cors-headers
+
+# ---- Database
+psycopg2-binary
+
+# ----  Image Processing
+Pillow
+
+# ----  Security & Validation
+django-simple-captcha
+python-decouple
+
+# ----  WebSockets & Async
+channels
+daphne
+asgiref
+
+# ----  Caching & Message Broker
+redis
+channels-redis
+django-cacheops
+
+# ----  Cloud Storage
+cloudinary
+django-cloudinary-storage
+
+# ----  Static Files
+whitenoise
