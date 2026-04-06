@@ -17,7 +17,7 @@ const handleReply = (id) => {
       nextTick(() => {
         formRef.value?.focusTextarea()
       })
-    }, 50)
+    }, 300)
   })
 }
 

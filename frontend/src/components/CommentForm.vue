@@ -165,7 +165,7 @@ const handlerFileChange = (event, type) => {
   }
 }
 const resetForm = () => {
-// ---- Clear text and file fields, but LEAVE nickname and email 
+  // ---- Clear text and file fields, but LEAVE nickname and email
   formData.value.text = ''
   formData.value.homepage = ''
   formData.value.captcha_val = ''
@@ -197,7 +197,7 @@ const submitForm = async () => {
     triggerAlert('Please enter captcha code')
     return
   }
-  
+
   errors.value = {}
   isSubmitting.value = true
   const requestData = new FormData()
@@ -226,7 +226,6 @@ const submitForm = async () => {
       setTimeout(() => (showSuccess.value = false), 5000)
     }
   } catch (err) {
-
     console.error('Upload error:', err.response?.data || err.message)
     if (err.response && err.response.data) {
       errors.value = err.response.data // ---- DRF returns validation errors
@@ -247,6 +246,13 @@ const submitForm = async () => {
 defineExpose({
   focusTextarea: () => textareaRef.value?.focus(),
 })
+
+// ---- Sets the focus and prevents jumping to the element
+const focusTextarea = () => {
+  textareaRef.value?.focus({ preventScroll: true })
+}
+
+defineExpose({ focusTextarea })
 </script>
 
 <template>
