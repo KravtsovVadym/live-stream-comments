@@ -36,6 +36,8 @@ const triggerAlert = (message) => {
 }
 
 const formData = ref({
+  nickname: '',
+  email: '',
   homepage: '',
   text: '',
   captcha_key: '',
@@ -67,6 +69,7 @@ watch(
   (newParentId) => {
     if (newParentId) {
       formData.value.parent = newParentId
+      triggerAlert(`Replying to comment #${newParentId}`)
     }
   },
 )
@@ -76,8 +79,21 @@ const cancelReply = () => {
   emit('cancel-reply')
 }
 
+// ---- Save nickname email to localStorage
+watch(
+  () => [formData.value.nickname, formData.value.email],
+  ([nickname, email]) => {
+    if (nickname) localStorage.setItem('userNickname', nickname)
+    if (email) localStorage.setItem('userEmail', email)
+  },
+)
+
 // ---- Getting a captcha when loading
-onMounted(featchCaptcha)
+onMounted(() => {
+  featchCaptcha()
+  formData.value.nickname = localStorage.getItem('userNickname') || ''
+  formData.value.email = localStorage.getItem('userEmail') || ''
+})
 
 // ---- Reactive preview: replace \n with <br> then sanitize
 const previewHtml = computed(() => {
@@ -165,6 +181,23 @@ const resetForm = () => {
 
 // ---- Form submission
 const submitForm = async () => {
+  if (!formData.value.nickname) {
+    triggerAlert('Please enter nickname')
+    return
+  }
+  if (!formData.value.email) {
+    triggerAlert('Please enter email')
+    return
+  }
+  if (!formData.value.text) {
+    triggerAlert('Please enter message')
+    return
+  }
+  if (!formData.value.captcha_val) {
+    triggerAlert('Please enter captcha code')
+    return
+  }
+  
   errors.value = {}
   isSubmitting.value = true
   const requestData = new FormData()
@@ -197,12 +230,23 @@ const submitForm = async () => {
     console.error('Upload error:', err.response?.data || err.message)
     if (err.response && err.response.data) {
       errors.value = err.response.data // ---- DRF returns validation errors
+      // ---- Show captcha error as alert toast
+      if (errors.value.captcha || errors.value.captcha_val) {
+        const msg = errors.value.captcha?.[0] || errors.value.captcha_val?.[0]
+        triggerAlert(msg)
+        delete errors.value.captcha
+        delete errors.value.captcha_val
+      }
     }
     featchCaptcha() // ---- Update the captcha
   } finally {
     isSubmitting.value = false
   }
 }
+
+defineExpose({
+  focusTextarea: () => textareaRef.value?.focus(),
+})
 </script>
 
 <template>
