@@ -1,5 +1,3 @@
-<!-- Main component of the Vue application for the commenting system -->
-
 <script setup>
 import { ref, nextTick } from 'vue'
 import CommentForm from './components/CommentForm.vue'
@@ -13,7 +11,14 @@ const formRef = ref(null)
 // ---- Sets the parent comment and scrolls to the form
 const handleReply = (id) => {
   parentIdForReply.value = id
-  formRef.value?.$el.scrollIntoView({ behavior: 'smooth' })
+  nextTick(() => {
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      nextTick(() => {
+        formRef.value?.focusTextarea()
+      })
+    }, 50)
+  })
 }
 
 // ---- Scroll to parent comment after successful addition

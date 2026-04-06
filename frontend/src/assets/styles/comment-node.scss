@@ -30,12 +30,12 @@
   > .comm-n > .comm-item,
   .comm-item {
     padding: 14px 16px;
-    background: #0a2a35 !important;
-    border-color: #0d3a47 !important;
+    background: #0a2a35;
+    border-color: #0d3a47;
 
     &:hover {
-      background: #0d3340 !important;
-      border-color: rgba(#1a7a8a, 0.4) !important;
+      background: #0d3340;
+      border-color: rgba(#1a7a8a, 0.4);
     }
   }
 }

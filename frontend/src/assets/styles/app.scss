@@ -1,5 +1,6 @@
 body {
-  background: #0d1117 !important;
+  background: #0d1117;
+  scroll-behavior: smooth;
 }
 
 // ---- Hero
@@ -9,6 +10,7 @@ body {
     radial-gradient(ellipse 80% 60% at 20% 30%, #1a2456 0%, transparent 60%),
     radial-gradient(ellipse 70% 70% at 80% 70%, #0d3d4a 0%, transparent 60%),
     linear-gradient(160deg, #111827 0%, #0f2236 40%, #0d2b35 70%, #0a1f2e 100%);
+  background-attachment: fixed;
 }
 
 .hero-title {
@@ -64,9 +66,30 @@ body {
   }
 }
 
+
 // ---- Lightbox2 overrides
 .lb-outerContainer {
-  background: #0d1117 !important;
+  background: #0d1117 ;
+  position: fixed ;
+  top: 50% ;
+  left: 50% ;
+  transform: translate(-50%, -50%) ;
+}
+
+// ---- Center lightbox image
+.lb-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.lb-dataContainer {
+  position: fixed;
+  bottom: auto;
+  top: 65%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 // ---- Remove the standard white frame around the photo itself

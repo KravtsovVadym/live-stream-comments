@@ -10,7 +10,7 @@ const props = defineProps({
 
 const emit = defineEmits(['reply']) 
 // ---- Expandable answers
-const isExpanded = ref(false)
+const isExpanded = ref(true)
 const repContRef = ref(null)
 
 const handleReply = (commentId) => {
