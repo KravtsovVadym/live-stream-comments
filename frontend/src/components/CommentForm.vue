@@ -243,10 +243,6 @@ const submitForm = async () => {
   }
 }
 
-defineExpose({
-  focusTextarea: () => textareaRef.value?.focus(),
-})
-
 // ---- Sets the focus and prevents jumping to the element
 const focusTextarea = () => {
   textareaRef.value?.focus({ preventScroll: true })

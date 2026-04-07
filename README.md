@@ -8,37 +8,56 @@
 |:---------:|:--------------:|
 | ![Main Page](screenshot_prj/c-main.png) | ![Thread](screenshot_prj/c-thread.png) |
 
-**Database Schema**
+* **Database Schema**
 <div align="center">
   <img src="screenshot_prj/db_scheme.png" width="350"/>
 </div>
+
+
+* **Project structure**
+    
+    ```
+    live-stream-comments/
+    ├── backend/
+    │   ├── comment_board/   # settings, urls, asgi
+    │   ├── comments/        # models, views, serializers, validators, consumers, tests
+    │   └── manage.py
+    ├── frontend/
+    │   └── src/
+    │       ├── components/
+    │       ├── composables/
+    │       ├── services/
+    │       └── assets/styles/
+    ├── docker-compose.yml
+    ├── Dockerfile
+    └── README.md
+
 ### Start-up instructions
 
 > 💡 **Prerequisites:** Make sure [Docker](https://docs.docker.com/get-started/get-docker/) is installed and running.
-
 1. **Clone the repository:**
     ```bash
-    git clone https://github.com/KravtsovVadym/django-spa-comments
+    git clone https://github.com/KravtsovVadym/live-stream-comments
     ```
     ```bash
-    cd django-spa-comments
+    cd live-stream-comments
     ```
 
 2. **Configuration:**
     ```bash
-        cp backend/.env.example backend/.env
-        cp frontend/.env.example frontend/.env
+    cp backend/.env.example backend/.env
+    cp frontend/.env.example frontend/.env
     ```
-3. Generate a secret key and paste it into `.env` as    `SECRET_KEY`:
-    ```bash
-        python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
-    ```
-4. **Build and start all services:**
+
+3. **Build and start all services:**
     ```bash
     docker compose up --build
     ```
+    
+    
+<div align="center">
 
-5. **Open in browser:**
+   **Open in browser:**
 
 | Service | URL |
 |---------|-----|
@@ -62,3 +81,4 @@
 | Frontend | [Vue 3](https://vuejs.org/guide/introduction) · [Vite](https://vitejs.dev/guide/) · [Axios](https://axios-http.com/docs/intro) |
 | UI | [Bootstrap 5](https://getbootstrap.com/docs/5.3/) · [Lucide Vue](https://lucide.dev/guide/packages/lucide-vue-next) · [DOMPurify](https://github.com/cure53/DOMPurify) |
 | Infra | [Docker](https://docs.docker.com/) · [Docker Compose](https://docs.docker.com/compose/) · [Render](https://render.com/docs) |
+</div>
