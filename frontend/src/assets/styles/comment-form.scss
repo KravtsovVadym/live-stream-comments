@@ -172,7 +172,8 @@
       color: $text-main;
       font-size: 0.875rem;
       word-break: break-word;
-      
+      white-space: pre-wrap;
+
       code {
         background: rgba($purple, 0.15);
         color: #7dd3fc;
